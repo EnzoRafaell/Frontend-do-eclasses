@@ -1,362 +1,171 @@
 <!DOCTYPE html>
-
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-Classes | Sistema de Interclasses</title>
-
-```
-<link rel="stylesheet" href="style.css">
-```
-
+    <title>E-Classes Dashboard</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-```
-<div class="container">
+<header>
+    <h1>E-Classes</h1>
+    <p>Gerenciador de Interclasses</p>
+</header>
 
-    <!-- MENU LATERAL -->
+<nav class="menu">
+    <button onclick="abrirAba('dashboard')">Dashboard</button>
+    <button onclick="abrirAba('jogadores')">Jogadores</button>
+    <button onclick="abrirAba('times')">Times</button>
+    <button onclick="abrirAba('modalidades')">Modalidades</button>
+    <button onclick="abrirAba('confrontos')">Confrontos</button>
+</nav>
 
-    <aside class="sidebar">
+<main>
 
-        <div class="logo">
-            <h2>E-Classes</h2>
-            <p>Gerenciador de Interclasses</p>
+    <!-- DASHBOARD -->
+    <section id="dashboard" class="aba ativa">
+
+        <h2>Dashboard</h2>
+
+        <div class="cards-dashboard">
+
+            <div class="dashboard-card">
+                <h3>Jogadores</h3>
+                <span id="totalJogadores">0</span>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Times</h3>
+                <span id="totalTimes">0</span>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Modalidades</h3>
+                <span id="totalModalidades">0</span>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Confrontos</h3>
+                <span id="totalConfrontos">0</span>
+            </div>
+
         </div>
 
-        <nav>
+    </section>
 
-            <button class="menu-btn" onclick="abrirAba('dashboard')">
-                Dashboard
+    <!-- JOGADORES -->
+    <section id="jogadores" class="aba">
+
+        <h2>Cadastro de Jogadores</h2>
+
+        <div class="formulario">
+
+            <input type="text" id="nomeJogador" placeholder="Nome">
+
+            <input type="text" id="turmaJogador" placeholder="Turma">
+
+            <input type="email" id="emailJogador" placeholder="Email">
+
+            <input type="number" id="timeJogador" placeholder="ID do Time">
+
+            <button onclick="cadastrarJogador()">
+                Cadastrar Jogador
             </button>
 
-            <button class="menu-btn" onclick="abrirAba('jogadores')">
-                Jogadores
+        </div>
+
+        <div id="listaJogadores" class="lista"></div>
+
+    </section>
+
+    <!-- TIMES -->
+    <section id="times" class="aba">
+
+        <h2>Cadastro de Times</h2>
+
+        <div class="formulario">
+
+            <input type="text" id="nomeTime" placeholder="Nome do Time">
+
+            <input type="text" id="turmaTime" placeholder="Turma">
+
+            <input type="color" id="corTime">
+
+            <button onclick="cadastrarTime()">
+                Cadastrar Time
             </button>
 
-            <button class="menu-btn" onclick="abrirAba('times')">
-                Times
+        </div>
+
+        <div id="listaTimes" class="lista"></div>
+
+    </section>
+
+    <!-- MODALIDADES -->
+    <section id="modalidades" class="aba">
+
+        <h2>Cadastro de Modalidades</h2>
+
+        <div class="formulario">
+
+            <input type="text"
+                   id="nomeModalidade"
+                   placeholder="Nome">
+
+            <input type="text"
+                   id="descricaoModalidade"
+                   placeholder="Descrição">
+
+            <input type="number"
+                   id="pontuacaoModalidade"
+                   placeholder="Pontuação">
+
+            <button onclick="cadastrarModalidade()">
+                Cadastrar Modalidade
             </button>
 
-            <button class="menu-btn" onclick="abrirAba('modalidades')">
-                Modalidades
+        </div>
+
+        <div id="listaModalidades" class="lista"></div>
+
+    </section>
+
+    <!-- CONFRONTOS -->
+    <section id="confrontos" class="aba">
+
+        <h2>Cadastro de Confrontos</h2>
+
+        <div class="formulario">
+
+            <input type="number"
+                   id="timeCasa"
+                   placeholder="ID Time Casa">
+
+            <input type="number"
+                   id="timeVisitante"
+                   placeholder="ID Time Visitante">
+
+            <input type="number"
+                   id="modalidadeConfronto"
+                   placeholder="ID Modalidade">
+
+            <input type="date"
+                   id="dataConfronto">
+
+            <button onclick="cadastrarConfronto()">
+                Cadastrar Confronto
             </button>
 
-            <button class="menu-btn" onclick="abrirAba('confrontos')">
-                Confrontos
-            </button>
+        </div>
 
-        </nav>
+        <div id="listaConfrontos" class="lista"></div>
 
-    </aside>
+    </section>
 
-    <!-- CONTEÚDO -->
-
-    <main class="content">
-
-        <!-- DASHBOARD -->
-
-        <section id="dashboard" class="aba ativa">
-
-            <h1>Painel Geral</h1>
-
-            <div class="cards-estatisticas">
-
-                <div class="card-info">
-                    <h3>Jogadores</h3>
-                    <span id="totalJogadores">0</span>
-                </div>
-
-                <div class="card-info">
-                    <h3>Times</h3>
-                    <span id="totalTimes">0</span>
-                </div>
-
-                <div class="card-info">
-                    <h3>Modalidades</h3>
-                    <span id="totalModalidades">0</span>
-                </div>
-
-                <div class="card-info">
-                    <h3>Confrontos</h3>
-                    <span id="totalConfrontos">0</span>
-                </div>
-
-            </div>
-
-        </section>
-
-        <!-- JOGADORES -->
-
-        <section id="jogadores" class="aba">
-
-            <h1>Jogadores</h1>
-
-            <div class="form-card">
-
-                <h2>Cadastrar Jogador</h2>
-
-                <div class="form-grid">
-
-                    <input
-                        type="text"
-                        id="nomeJogador"
-                        placeholder="Nome do jogador">
-
-                    <input
-                        type="text"
-                        id="turmaJogador"
-                        placeholder="Turma">
-
-                    <input
-                        type="email"
-                        id="emailJogador"
-                        placeholder="Email">
-
-                    <input
-                        type="number"
-                        id="timeJogador"
-                        placeholder="ID do Time">
-
-                </div>
-
-                <button
-                    class="btn-primary"
-                    onclick="cadastrarJogador()">
-
-                    Cadastrar Jogador
-
-                </button>
-
-            </div>
-
-            <div class="listagem">
-
-                <div class="titulo-lista">
-
-                    <h2>Lista de Jogadores</h2>
-
-                    <button
-                        class="btn-secondary"
-                        onclick="carregarJogadores()">
-
-                        Atualizar
-
-                    </button>
-
-                </div>
-
-                <div id="listaJogadores" class="cards-container">
-
-                </div>
-
-            </div>
-
-        </section>
-
-        <!-- TIMES -->
-
-        <section id="times" class="aba">
-
-            <h1>Times</h1>
-
-            <div class="form-card">
-
-                <h2>Cadastrar Time</h2>
-
-                <div class="form-grid">
-
-                    <input
-                        type="text"
-                        id="nomeTime"
-                        placeholder="Nome do Time">
-
-                    <input
-                        type="text"
-                        id="turmaTime"
-                        placeholder="Turma">
-
-                    <input
-                        type="color"
-                        id="corTime">
-
-                </div>
-
-                <button
-                    class="btn-primary"
-                    onclick="cadastrarTime()">
-
-                    Cadastrar Time
-
-                </button>
-
-            </div>
-
-            <div class="listagem">
-
-                <div class="titulo-lista">
-
-                    <h2>Lista de Times</h2>
-
-                    <button
-                        class="btn-secondary"
-                        onclick="carregarTimes()">
-
-                        Atualizar
-
-                    </button>
-
-                </div>
-
-                <div id="listaTimes" class="cards-container">
-
-                </div>
-
-            </div>
-
-        </section>
-
-        <!-- MODALIDADES -->
-
-        <section id="modalidades" class="aba">
-
-            <h1>Modalidades</h1>
-
-            <div class="form-card">
-
-                <h2>Cadastrar Modalidade</h2>
-
-                <div class="form-grid">
-
-                    <input
-                        type="text"
-                        id="nomeModalidade"
-                        placeholder="Nome">
-
-                    <input
-                        type="text"
-                        id="descricaoModalidade"
-                        placeholder="Descrição">
-
-                    <input
-                        type="number"
-                        id="pontuacaoModalidade"
-                        placeholder="Pontuação">
-
-                </div>
-
-                <button
-                    class="btn-primary"
-                    onclick="cadastrarModalidade()">
-
-                    Cadastrar Modalidade
-
-                </button>
-
-            </div>
-
-            <div class="listagem">
-
-                <div class="titulo-lista">
-
-                    <h2>Lista de Modalidades</h2>
-
-                    <button
-                        class="btn-secondary"
-                        onclick="carregarModalidades()">
-
-                        Atualizar
-
-                    </button>
-
-                </div>
-
-                <div id="listaModalidades" class="cards-container">
-
-                </div>
-
-            </div>
-
-        </section>
-
-        <!-- CONFRONTOS -->
-
-        <section id="confrontos" class="aba">
-
-            <h1>Confrontos</h1>
-
-            <div class="form-card">
-
-                <h2>Cadastrar Confronto</h2>
-
-                <div class="form-grid">
-
-                    <input
-                        type="number"
-                        id="timeCasa"
-                        placeholder="ID Time Casa">
-
-                    <input
-                        type="number"
-                        id="timeVisitante"
-                        placeholder="ID Time Visitante">
-
-                    <input
-                        type="number"
-                        id="modalidadeConfronto"
-                        placeholder="ID Modalidade">
-
-                    <input
-                        type="date"
-                        id="dataConfronto">
-
-                </div>
-
-                <button
-                    class="btn-primary"
-                    onclick="cadastrarConfronto()">
-
-                    Cadastrar Confronto
-
-                </button>
-
-            </div>
-
-            <div class="listagem">
-
-                <div class="titulo-lista">
-
-                    <h2>Lista de Confrontos</h2>
-
-                    <button
-                        class="btn-secondary"
-                        onclick="carregarConfrontos()">
-
-                        Atualizar
-
-                    </button>
-
-                </div>
-
-                <div id="listaConfrontos" class="cards-container">
-
-                </div>
-
-            </div>
-
-        </section>
-
-    </main>
-
-</div>
+</main>
 
 <script src="script.js"></script>
-```
 
 </body>
-
 </html>
-
