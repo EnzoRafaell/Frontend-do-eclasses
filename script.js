@@ -1,8 +1,8 @@
 const API = "http://localhost:3000";
 
-/* ===========================
-CONTROLE DAS ABAS
-=========================== */
+/* ==========================
+ABAS
+========================== */
 
 function abrirAba(id) {
 
@@ -18,31 +18,117 @@ document.getElementById(id).classList.add("ativa");
 
 }
 
-/* ===========================
+/* ==========================
+UTILITÁRIOS
+========================== */
+
+function limparElemento(elemento) {
+
+```
+while (elemento.firstChild) {
+    elemento.removeChild(elemento.firstChild);
+}
+```
+
+}
+
+/* ==========================
+DASHBOARD
+========================== */
+
+async function atualizarDashboard() {
+
+```
+try {
+
+    const [jogadores, times, modalidades, confrontos] =
+        await Promise.all([
+            fetch(`${API}/jogadores`).then(r => r.json()),
+            fetch(`${API}/times`).then(r => r.json()),
+            fetch(`${API}/modalidades`).then(r => r.json()),
+            fetch(`${API}/confrontos`).then(r => r.json())
+        ]);
+
+    document.getElementById("totalJogadores").textContent =
+        jogadores.total;
+
+    document.getElementById("totalTimes").textContent =
+        times.total;
+
+    document.getElementById("totalModalidades").textContent =
+        modalidades.total;
+
+    document.getElementById("totalConfrontos").textContent =
+        confrontos.total;
+
+} catch (erro) {
+
+    console.log(erro);
+
+}
+```
+
+}
+
+/* ==========================
 JOGADORES
-=========================== */
+========================== */
 
 async function carregarJogadores() {
 
 ```
-const resposta = await fetch(`${API}/jogadores`);
-const dados = await resposta.json();
+const resposta =
+    await fetch(`${API}/jogadores`);
 
-const lista = document.getElementById("listaJogadores");
+const dados =
+    await resposta.json();
 
-lista.innerHTML = "";
+const lista =
+    document.getElementById("listaJogadores");
+
+limparElemento(lista);
 
 dados.jogadores.forEach(jogador => {
 
-    lista.innerHTML += `
-        <div class="card">
-            <h3>${jogador.nome}</h3>
-            <p><strong>Turma:</strong> ${jogador.turma}</p>
-            <p><strong>Email:</strong> ${jogador.email}</p>
-            <p><strong>Time ID:</strong> ${jogador.timeId ?? "-"}</p>
-        </div>
-    `;
+    const card =
+        document.createElement("div");
+
+    card.className = "card";
+
+    const nome =
+        document.createElement("h3");
+
+    nome.textContent =
+        jogador.nome;
+
+    const turma =
+        document.createElement("p");
+
+    turma.textContent =
+        `Turma: ${jogador.turma}`;
+
+    const email =
+        document.createElement("p");
+
+    email.textContent =
+        `Email: ${jogador.email}`;
+
+    const time =
+        document.createElement("p");
+
+    time.textContent =
+        `Time ID: ${jogador.timeId}`;
+
+    card.appendChild(nome);
+    card.appendChild(turma);
+    card.appendChild(email);
+    card.appendChild(time);
+
+    lista.appendChild(card);
+
 });
+
+atualizarDashboard();
 ```
 
 }
@@ -50,63 +136,103 @@ dados.jogadores.forEach(jogador => {
 async function cadastrarJogador() {
 
 ```
-const nome = document.getElementById("nomeJogador").value;
-const turma = document.getElementById("turmaJogador").value;
-const email = document.getElementById("emailJogador").value;
-const timeId = Number(document.getElementById("timeJogador").value);
+const nome =
+    document.getElementById("nomeJogador").value;
+
+const turma =
+    document.getElementById("turmaJogador").value;
+
+const email =
+    document.getElementById("emailJogador").value;
+
+const timeId =
+    Number(document.getElementById("timeJogador").value);
 
 await fetch(`${API}/jogadores`, {
+
     method: "POST",
+
     headers: {
         "Content-Type": "application/json"
     },
+
     body: JSON.stringify({
         nome,
         turma,
         email,
         timeId
     })
-});
 
-carregarJogadores();
+});
 
 document.getElementById("nomeJogador").value = "";
 document.getElementById("turmaJogador").value = "";
 document.getElementById("emailJogador").value = "";
 document.getElementById("timeJogador").value = "";
+
+carregarJogadores();
 ```
 
 }
-
-/* ===========================
+/* ==========================
 TIMES
-=========================== */
+========================== */
 
 async function carregarTimes() {
 
 ```
-const resposta = await fetch(`${API}/times`);
-const dados = await resposta.json();
+const resposta =
+    await fetch(`${API}/times`);
 
-const lista = document.getElementById("listaTimes");
+const dados =
+    await resposta.json();
 
-lista.innerHTML = "";
+const lista =
+    document.getElementById("listaTimes");
+
+limparElemento(lista);
 
 dados.times.forEach(time => {
 
-    lista.innerHTML += `
-        <div class="card">
-            <h3>${time.nome}</h3>
-            <p><strong>Turma:</strong> ${time.turma}</p>
-            <p><strong>Jogadores:</strong> ${time.jogadores}</p>
+    const card =
+        document.createElement("div");
 
-            <div 
-                class="cor-time"
-                style="background:${time.cor}">
-            </div>
-        </div>
-    `;
+    card.className = "card";
+
+    const nome =
+        document.createElement("h3");
+
+    nome.textContent =
+        time.nome;
+
+    const turma =
+        document.createElement("p");
+
+    turma.textContent =
+        `Turma: ${time.turma}`;
+
+    const jogadores =
+        document.createElement("p");
+
+    jogadores.textContent =
+        `Jogadores: ${time.jogadores}`;
+
+    const cor =
+        document.createElement("div");
+
+    cor.className = "cor-time";
+    cor.style.backgroundColor = time.cor;
+
+    card.appendChild(nome);
+    card.appendChild(turma);
+    card.appendChild(jogadores);
+    card.appendChild(cor);
+
+    lista.appendChild(card);
+
 });
+
+atualizarDashboard();
 ```
 
 }
@@ -114,62 +240,91 @@ dados.times.forEach(time => {
 async function cadastrarTime() {
 
 ```
-const nome = document.getElementById("nomeTime").value;
-const turma = document.getElementById("turmaTime").value;
-const cor = document.getElementById("corTime").value;
+const nome =
+    document.getElementById("nomeTime").value;
+
+const turma =
+    document.getElementById("turmaTime").value;
+
+const cor =
+    document.getElementById("corTime").value;
 
 await fetch(`${API}/times`, {
+
     method: "POST",
+
     headers: {
         "Content-Type": "application/json"
     },
+
     body: JSON.stringify({
         nome,
         turma,
         cor
     })
-});
 
-carregarTimes();
+});
 
 document.getElementById("nomeTime").value = "";
 document.getElementById("turmaTime").value = "";
+
+carregarTimes();
 ```
 
 }
 
-/* ===========================
+/* ==========================
 MODALIDADES
-=========================== */
+========================== */
 
 async function carregarModalidades() {
 
 ```
-const resposta = await fetch(`${API}/modalidades`);
-const dados = await resposta.json();
+const resposta =
+    await fetch(`${API}/modalidades`);
 
-const lista = document.getElementById("listaModalidades");
+const dados =
+    await resposta.json();
 
-lista.innerHTML = "";
+const lista =
+    document.getElementById("listaModalidades");
+
+limparElemento(lista);
 
 dados.modalidades.forEach(modalidade => {
 
-    lista.innerHTML += `
-        <div class="card">
-            <h3>${modalidade.nome}</h3>
+    const card =
+        document.createElement("div");
 
-            <p>
-                <strong>Descrição:</strong>
-                ${modalidade.descricao}
-            </p>
+    card.className = "card";
 
-            <p>
-                <strong>Pontuação:</strong>
-                ${modalidade.pontuacao}
-            </p>
-        </div>
-    `;
+    const nome =
+        document.createElement("h3");
+
+    nome.textContent =
+        modalidade.nome;
+
+    const descricao =
+        document.createElement("p");
+
+    descricao.textContent =
+        `Descrição: ${modalidade.descricao}`;
+
+    const pontuacao =
+        document.createElement("p");
+
+    pontuacao.textContent =
+        `Pontuação: ${modalidade.pontuacao}`;
+
+    card.appendChild(nome);
+    card.appendChild(descricao);
+    card.appendChild(pontuacao);
+
+    lista.appendChild(card);
+
 });
+
+atualizarDashboard();
 ```
 
 }
@@ -177,75 +332,117 @@ dados.modalidades.forEach(modalidade => {
 async function cadastrarModalidade() {
 
 ```
-const nome = document.getElementById("nomeModalidade").value;
-const descricao = document.getElementById("descricaoModalidade").value;
-const pontuacao = Number(document.getElementById("pontuacaoModalidade").value);
+const nome =
+    document.getElementById("nomeModalidade").value;
+
+const descricao =
+    document.getElementById("descricaoModalidade").value;
+
+const pontuacao =
+    Number(
+        document.getElementById(
+            "pontuacaoModalidade"
+        ).value
+    );
 
 await fetch(`${API}/modalidades`, {
+
     method: "POST",
+
     headers: {
         "Content-Type": "application/json"
     },
+
     body: JSON.stringify({
         nome,
         descricao,
         pontuacao
     })
+
 });
 
-carregarModalidades();
+document.getElementById(
+    "nomeModalidade"
+).value = "";
 
-document.getElementById("nomeModalidade").value = "";
-document.getElementById("descricaoModalidade").value = "";
-document.getElementById("pontuacaoModalidade").value = "";
+document.getElementById(
+    "descricaoModalidade"
+).value = "";
+
+document.getElementById(
+    "pontuacaoModalidade"
+).value = "";
+
+carregarModalidades();
 ```
 
 }
-
-/* ===========================
+/* ==========================
 CONFRONTOS
-=========================== */
+========================== */
 
 async function carregarConfrontos() {
 
 ```
-const resposta = await fetch(`${API}/confrontos`);
-const dados = await resposta.json();
+const resposta =
+    await fetch(`${API}/confrontos`);
 
-const lista = document.getElementById("listaConfrontos");
+const dados =
+    await resposta.json();
 
-lista.innerHTML = "";
+const lista =
+    document.getElementById("listaConfrontos");
+
+limparElemento(lista);
 
 dados.confrontos.forEach(confronto => {
 
-    lista.innerHTML += `
-        <div class="card">
+    const card =
+        document.createElement("div");
 
-            <h3>${confronto.modalidade}</h3>
+    card.className = "card";
 
-            <p>
-                <strong>Casa:</strong>
-                ${confronto.timeCasa}
-            </p>
+    const modalidade =
+        document.createElement("h3");
 
-            <p>
-                <strong>Visitante:</strong>
-                ${confronto.timeVisitante}
-            </p>
+    modalidade.textContent =
+        confronto.modalidade;
 
-            <p>
-                <strong>Data:</strong>
-                ${confronto.data}
-            </p>
+    const casa =
+        document.createElement("p");
 
-            <p>
-                <strong>Status:</strong>
-                ${confronto.status}
-            </p>
+    casa.textContent =
+        `Time Casa: ${confronto.timeCasa}`;
 
-        </div>
-    `;
+    const visitante =
+        document.createElement("p");
+
+    visitante.textContent =
+        `Time Visitante: ${confronto.timeVisitante}`;
+
+    const data =
+        document.createElement("p");
+
+    data.textContent =
+        `Data: ${confronto.data}`;
+
+    const status =
+        document.createElement("p");
+
+    status.textContent =
+        `Status: ${confronto.status}`;
+
+    card.appendChild(modalidade);
+    card.appendChild(casa);
+    card.appendChild(visitante);
+    card.appendChild(data);
+    card.appendChild(status);
+
+    lista.appendChild(card);
+
 });
+
+atualizarDashboard();
 ```
 
 }
@@ -254,51 +451,87 @@ async function cadastrarConfronto() {
 
 ```
 const timeCasaId =
-    Number(document.getElementById("timeCasa").value);
+    Number(
+        document.getElementById(
+            "timeCasa"
+        ).value
+    );
 
 const timeVisitanteId =
-    Number(document.getElementById("timeVisitante").value);
+    Number(
+        document.getElementById(
+            "timeVisitante"
+        ).value
+    );
 
 const modalidadeId =
-    Number(document.getElementById("modalidadeConfronto").value);
+    Number(
+        document.getElementById(
+            "modalidadeConfronto"
+        ).value
+    );
 
 const data =
-    document.getElementById("dataConfronto").value;
+    document.getElementById(
+        "dataConfronto"
+    ).value;
 
 await fetch(`${API}/confrontos`, {
+
     method: "POST",
+
     headers: {
         "Content-Type": "application/json"
     },
+
     body: JSON.stringify({
         timeCasaId,
         timeVisitanteId,
         modalidadeId,
         data
     })
+
 });
 
-carregarConfrontos();
+document.getElementById(
+    "timeCasa"
+).value = "";
 
-document.getElementById("timeCasa").value = "";
-document.getElementById("timeVisitante").value = "";
-document.getElementById("modalidadeConfronto").value = "";
-document.getElementById("dataConfronto").value = "";
+document.getElementById(
+    "timeVisitante"
+).value = "";
+
+document.getElementById(
+    "modalidadeConfronto"
+).value = "";
+
+document.getElementById(
+    "dataConfronto"
+).value = "";
+
+carregarConfrontos();
 ```
 
 }
 
-/* ===========================
+/* ==========================
 INICIALIZAÇÃO
-=========================== */
+========================== */
 
 window.onload = () => {
 
 ```
+abrirAba("dashboard");
+
 carregarJogadores();
+
 carregarTimes();
+
 carregarModalidades();
+
 carregarConfrontos();
+
+atualizarDashboard();
 ```
 
 };
