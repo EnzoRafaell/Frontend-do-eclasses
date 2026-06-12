@@ -1,171 +1,108 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-Classes Dashboard</title>
-    <link rel="stylesheet" href="style.css">
+    <title>GamerClass | Sistema Interclasses Pro</title>
+    <link rel="stylesheet" href="style/index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-
-<header>
-    <h1>E-Classes</h1>
-    <p>Gerenciador de Interclasses</p>
-</header>
-
-<nav class="menu">
-    <button onclick="abrirAba('dashboard')">Dashboard</button>
-    <button onclick="abrirAba('jogadores')">Jogadores</button>
-    <button onclick="abrirAba('times')">Times</button>
-    <button onclick="abrirAba('modalidades')">Modalidades</button>
-    <button onclick="abrirAba('confrontos')">Confrontos</button>
-</nav>
-
-<main>
-
-    <!-- DASHBOARD -->
-    <section id="dashboard" class="aba ativa">
-
-        <h2>Dashboard</h2>
-
-        <div class="cards-dashboard">
-
-            <div class="dashboard-card">
-                <h3>Jogadores</h3>
-                <span id="totalJogadores">0</span>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside>
+            <div class="logo">
+                <i class="fas fa-gamepad"></i>
+                <span>GamerClass</span>
             </div>
+            <nav id="sidebar-nav">
+                <ul>
+                    <li data-view="dashboard" class="active"><i class="fas fa-chart-pie"></i> Painel</li>
+                    <li data-view="jogos"><i class="fas fa-trophy"></i> Jogos</li>
+                    <li data-view="times"><i class="fas fa-users"></i> Times</li>
+                    <li data-view="competidores"><i class="fas fa-user-ninja"></i> Competidores</li>
+                    <li data-view="confrontos"><i class="fa-solid fa-hand-fist"></i></i> Confrontos</li>
+                </ul>
+            </nav>
+        </aside>
 
-            <div class="dashboard-card">
-                <h3>Times</h3>
-                <span id="totalTimes">0</span>
-            </div>
+        <!-- Área principal -->
+        <main>
+            <!-- Dashboard -->
+            <section id="view-dashboard" class="view active">
+                <div class="hero">
+                    <h1>Arena GamerClass</h1>
+                    <p class="subtitle">O epicentro da competição interclasses 2026.</p>
+                </div>
+                <div class="stats-row" id="dashboard-stats"></div>
+                <h2>Próximos Grandes Confrontos</h2>
+                <div class="grid-container" id="upcoming-matches"></div>
+            </section>
 
-            <div class="dashboard-card">
-                <h3>Modalidades</h3>
-                <span id="totalModalidades">0</span>
-            </div>
+            <!-- Jogos -->
+            <section id="view-jogos" class="view">
+                <header>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h1>Jogos Digitais</h1>
+                            <p class="subtitle">Lista de modalidades e categorias do evento.</p>
+                        </div>
+                        <button class="btn-primary" onclick="abrirFormulario('jogo')">Novo Jogo</button>
+                    </div>
+                </header>
+                <div class="grid-container" id="list-jogos"></div>
+            </section>
 
-            <div class="dashboard-card">
-                <h3>Confrontos</h3>
-                <span id="totalConfrontos">0</span>
-            </div>
+            <!-- Times -->
+            <section id="view-times" class="view">
+                <header>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h1>Times da Casa</h1>
+                            <p class="subtitle">Equipes formadas para a glória eterna.</p>
+                        </div>
+                        <button class="btn-primary" onclick="abrirFormulario('time')">Novo Time</button>
+                    </div>
+                </header>
+                <div class="grid-container" id="list-times"></div>
+            </section>
 
-        </div>
+            <!-- Competidores -->
+            <section id="view-competidores" class="view">
+                <header>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h1>Elite Competidora</h1>
+                            <p class="subtitle">Os heróis que fazem o espetáculo acontecer.</p>
+                        </div>
+                        <button class="btn-primary" onclick="abrirFormulario('competidor')">Novo Competidor</button>
+                    </div>
+                </header>
+                <div class="grid-container" id="list-competidores"></div>
+            </section>
 
-    </section>
+            <!-- Confrontos -->
+            <section id="view-confrontos" class="view">
+                <header>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h1>Confrontos Diretos</h1>
+                            <p class="subtitle">Acompanhe e registre os resultados épicos.</p>
+                        </div>
+                        <button class="btn-primary" onclick="abrirFormulario('confronto')">Registrar Confronto</button>
+                    </div>
+                </header>
+                <div class="grid-container" id="list-confrontos"></div>
+            </section>
+        </main>
+    </div>
 
-    <!-- JOGADORES -->
-    <section id="jogadores" class="aba">
+    <!-- Modal -->
+    <div id="modal-container" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); backdrop-filter:blur(10px); z-index:1000; display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition: all 0.3s cubic-bezier(0.4,0,0.2,1);">
+        <div class="form-container" id="form-content"></div>
+    </div>
 
-        <h2>Cadastro de Jogadores</h2>
-
-        <div class="formulario">
-
-            <input type="text" id="nomeJogador" placeholder="Nome">
-
-            <input type="text" id="turmaJogador" placeholder="Turma">
-
-            <input type="email" id="emailJogador" placeholder="Email">
-
-            <input type="number" id="timeJogador" placeholder="ID do Time">
-
-            <button onclick="cadastrarJogador()">
-                Cadastrar Jogador
-            </button>
-
-        </div>
-
-        <div id="listaJogadores" class="lista"></div>
-
-    </section>
-
-    <!-- TIMES -->
-    <section id="times" class="aba">
-
-        <h2>Cadastro de Times</h2>
-
-        <div class="formulario">
-
-            <input type="text" id="nomeTime" placeholder="Nome do Time">
-
-            <input type="text" id="turmaTime" placeholder="Turma">
-
-            <input type="color" id="corTime">
-
-            <button onclick="cadastrarTime()">
-                Cadastrar Time
-            </button>
-
-        </div>
-
-        <div id="listaTimes" class="lista"></div>
-
-    </section>
-
-    <!-- MODALIDADES -->
-    <section id="modalidades" class="aba">
-
-        <h2>Cadastro de Modalidades</h2>
-
-        <div class="formulario">
-
-            <input type="text"
-                   id="nomeModalidade"
-                   placeholder="Nome">
-
-            <input type="text"
-                   id="descricaoModalidade"
-                   placeholder="Descrição">
-
-            <input type="number"
-                   id="pontuacaoModalidade"
-                   placeholder="Pontuação">
-
-            <button onclick="cadastrarModalidade()">
-                Cadastrar Modalidade
-            </button>
-
-        </div>
-
-        <div id="listaModalidades" class="lista"></div>
-
-    </section>
-
-    <!-- CONFRONTOS -->
-    <section id="confrontos" class="aba">
-
-        <h2>Cadastro de Confrontos</h2>
-
-        <div class="formulario">
-
-            <input type="number"
-                   id="timeCasa"
-                   placeholder="ID Time Casa">
-
-            <input type="number"
-                   id="timeVisitante"
-                   placeholder="ID Time Visitante">
-
-            <input type="number"
-                   id="modalidadeConfronto"
-                   placeholder="ID Modalidade">
-
-            <input type="date"
-                   id="dataConfronto">
-
-            <button onclick="cadastrarConfronto()">
-                Cadastrar Confronto
-            </button>
-
-        </div>
-
-        <div id="listaConfrontos" class="lista"></div>
-
-    </section>
-
-</main>
-
-<script src="script.js"></script>
-
+    <script src="service/api.js"></script>
+    <script src="controller/app.js"></script>
 </body>
 </html>
