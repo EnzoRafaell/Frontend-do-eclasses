@@ -2,55 +2,37 @@
 // Quando a API estiver pronta, basta trocar para: 'http://localhost:3000/api'
 const BASE_URL = 'http://localhost:3000/';
 
-// Função interna que simula um GET na "API"
+// Função genérica para requisições GET
 async function _get(endpoint) {
-    const response = await fetch(BASE_URL);
+    try {
+        const response = await fetch(`${BASE_URL}${endpoint}`);
 
-    if (!response.ok) {
-        throw new Error(`Erro ao buscar ${endpoint}: status ${response.status}`);
+        if (!response.ok) {
+            throw new Error(`HTTP Error: ${endpoint} - ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        return data;
+
+    } catch (error) {
+        console.error(`Erro ao buscar ${endpoint}:`, error);
+        return [];
     }
-
-    const data = await response.json();
-
-    // Mapeia cada endpoint para a chave correspondente no JSON
-    const rotas = {
-        '/jogos': data.games,
-        '/times': data.teams,
-        '/competidores': data.competitors,
-        '/confrontos': data.matches,
-    };
-
-    return rotas[endpoint] ?? [];
 }
 
-// Retorna todos os jogos
+// Funções específicas
 async function getJogos() {
-    const response = await fetch (`${BASE_URL} api/jogos`);
-    const data = await response.json();
-    console.log(response)
-    return data;
+    return await getDados('api/jogos');
 }
 
-// Retorna todos os times
 async function getTimes() {
-    const response = await fetch (`${BASE_URL} api/times`);
-    const data = await response.json();
-    console.log(response)
-    return data;
+    return await getDados('api/times');
 }
 
-// Retorna todos os competidores
 async function getCompetidores() {
-    const response = await fetch (`${BASE_URL} api/competidores`);
-    const data = await response.json();
-    console.log(response)
-    return data;
+    return await getDados('api/competidores');
 }
 
-// Retorna todos os confrontos
 async function getConfrontos() {
-    const response = await fetch (`${BASE_URL} api/confrontos`);
-    const data = await response.json();
-    console.log(response)
-    return data;
+    return await getDados('api/confrontos');
 }
