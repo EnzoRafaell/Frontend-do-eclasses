@@ -230,7 +230,6 @@ window.abrirFormulario = function (tipo) {
     formContent.innerHTML = formularios[tipo] || '';
 };
 
-// ===== EDITAR =====
 window.abrirEdicao = function (colecao, id) {
     if (!modal || !formContent) return;
 
@@ -241,7 +240,7 @@ window.abrirEdicao = function (colecao, id) {
     modal.style.opacity = '1';
     modal.style.pointerEvents = 'all';
 
-    const optionsTimes = state.times.map(t => `<option value="${t.id}" ${t.id == item.teamId || t.id == item.team1Id || t.id == item.team2Id ? 'selected' : ''}>${t.name}</option>`).join('');
+    const optionsTimes = state.times.map(t => `<option value="${t.id}" ${t.id == item.teamId ? 'selected' : ''}>${t.name}</option>`).join('');
     const optionsJogos = state.jogos.map(j => `<option value="${j.id}" ${j.id == item.gameId ? 'selected' : ''}>${j.name}</option>`).join('');
 
     let html = '';
@@ -272,7 +271,7 @@ window.abrirEdicao = function (colecao, id) {
                 <div style="display:flex; gap: 1rem;"><button type="submit" class="btn-primary">Salvar Alterações</button><button type="button" onclick="fecharModal()">Cancelar</button></div>
             </form>`;
     } else if (colecao === 'confrontos') {
-        const dataValue = item.date ? item.date.slice(0, 16) : '';
+        const dataValue = item.date ? String(item.date).slice(0, 16) : '';
         html = `
             <h2>Editar Confronto</h2>
             <form onsubmit="salvarEdicao(event, 'confrontos', ${id})">
@@ -328,7 +327,7 @@ window.salvarItem = async function (event, colecao) {
         renderizarTudo();
         fecharModal();
     } catch (erro) {
-        alert('Erro ao salvar. Verifique se a API está rodando (porta 3000).');
+        alert('Erro ao salvar. Verifique o Supabase e o console (F12).');
         console.error(erro);
     }
 };
@@ -357,7 +356,7 @@ window.salvarEdicao = async function (event, colecao, id) {
         renderizarTudo();
         fecharModal();
     } catch (erro) {
-        alert('Erro ao editar. Verifique se a API está rodando.');
+        alert('Erro ao editar. Verifique o Supabase e o console (F12).');
         console.error(erro);
     }
 };
@@ -402,7 +401,7 @@ window.apagarItem = async function (colecao, id) {
         state[colecao] = state[colecao].filter(item => item.id != id);
         renderizarTudo();
     } catch (erro) {
-        alert('Erro ao apagar. Verifique se a API está rodando.');
+        alert('Erro ao apagar. Verifique o Supabase e o console (F12).');
         console.error(erro);
     }
 };
