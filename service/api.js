@@ -1,79 +1,149 @@
-const BASE_URL = 'http://localhost:3000/';
+const SUPABASE_URL = 'https://htjahtnfkpqztafrupzc.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_F98I3lgpqsYstc3D88rL9w_ztreHQce';
 
-async function _get(endpoint) {
-    try {
-        const response = await fetch(`${BASE_URL}${endpoint}`);
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        return await response.json();
-    } catch (error) {
-        console.error(`Erro GET ${endpoint}:`, error);
-        return [];
-    }
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+function mapCompetidor(row) {
+    if (!row) return row;
+    return {
+        id: row.id,
+        name: row.name,
+        nickname: row.nickname,
+        teamId: row.team_id
+    };
 }
 
-async function _post(endpoint, body) {
-    try {
-        const response = await fetch(`${BASE_URL}${endpoint}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(body)
-        });
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        return await response.json();
-    } catch (error) {
-        console.error(`Erro POST ${endpoint}:`, error);
-        throw error;
-    }
+function mapConfronto(row) {
+    if (!row) return row;
+    return {
+        id: row.id,
+        gameId: row.game_id,
+        team1Id: row.team1_id,
+        team2Id: row.team2_id,
+        score1: row.score1,
+        score2: row.score2,
+        status: row.status,
+        date: row.date
+    };
 }
 
-async function _put(endpoint, body) {
-    try {
-        const response = await fetch(`${BASE_URL}${endpoint}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(body)
-        });
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        return await response.json();
-    } catch (error) {
-        console.error(`Erro PUT ${endpoint}:`, error);
-        throw error;
-    }
+async function getJogos() {
+    const { data, error } = await db.from('games').select('*').order('id');
+    if (error) { console.error('Erro getJogos:', error); return []; }
+    return data || [];
 }
 
-async function _delete(endpoint) {
-    try {
-        const response = await fetch(`${BASE_URL}${endpoint}`, {
-            method: 'DELETE'
-        });
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        return await response.json();
-    } catch (error) {
-        console.error(`Erro DELETE ${endpoint}:`, error);
-        throw error;
-    }
+async function getTimes() {
+    const { data, error } = await db.from('teams').select('*').order('id');
+    if (error) { console.error('Erro getTimes:', error); return []; }
+    return data || [];
 }
 
-// GETs
-async function getJogos() { return await _get('api/jogos'); }
-async function getTimes() { return await _get('api/times'); }
-async function getCompetidores() { return await _get('api/competidores'); }
-async function getConfrontos() { return await _get('api/confrontos'); }
+async function getCompetidores() {
+    const { data, error } = await db.from('competitors').select('*').order('id');
+    if (error) { console.error('Erro getCompetidores:', error); return []; }
+    return (data || []).map(mapCompetidor);
+}
 
-// POSTs
-async function criarJogo(dados) { return await _post('api/jogos', dados); }
-async function criarTime(dados) { return await _post('api/times', dados); }
-async function criarCompetidor(dados) { return await _post('api/competidores', dados); }
-async function criarConfronto(dados) { return await _post('api/confrontos', dados); }
+async function getConfrontos() {
+    const { data, error } = await db.from('matches').select('*').order('id');
+    if (error) { console.error('Erro getConfrontos:', error); return []; }
+    return (data || []).map(mapConfronto);
+}
 
-// PUTs (editar)
-async function atualizarJogo(id, dados) { return await _put(`api/jogos/${id}`, dados); }
-async function atualizarTime(id, dados) { return await _put(`api/times/${id}`, dados); }
-async function atualizarCompetidor(id, dados) { return await _put(`api/competidores/${id}`, dados); }
-async function atualizarConfronto(id, dados) { return await _put(`api/confrontos/${id}`, dados); }
+async function criarJogo(dados) {
+    const { data, error } = await db.from('games').insert([{ name: dados.name, genre: dados.genre }]).select().single();
+    if (error) throw error;
+    return data;
+}
 
-// DELETEs
-async function apagarJogo(id) { return await _delete(`api/jogos/${id}`); }
-async function apagarTime(id) { return await _delete(`api/times/${id}`); }
-async function apagarCompetidor(id) { return await _delete(`api/competidores/${id}`); }
-async function apagarConfronto(id) { return await _delete(`api/confrontos/${id}`); }
+async function criarTime(dados) {
+    const { data, error } = await db.from('teams').insert([{ name: dados.name, color: dados.color || '#6366f1' }]).select().single();
+    if (error) throw error;
+    return data;
+}
+
+async function criarCompetidor(dados) {
+    const { data, error } = await db.from('competitors').insert([{
+        name: dados.name,
+        nickname: dados.nickname,
+        team_id: Number(dados.teamId)
+    }]).select().single();
+    if (error) throw error;
+    return mapCompetidor(data);
+}
+
+async function criarConfronto(dados) {
+    const { data, error } = await db.from('matches').insert([{
+        game_id: Number(dados.gameId),
+        team1_id: Number(dados.team1Id),
+        team2_id: Number(dados.team2Id),
+        score1: Number(dados.score1 ?? 0),
+        score2: Number(dados.score2 ?? 0),
+        status: dados.status || 'scheduled',
+        date: dados.date
+    }]).select().single();
+    if (error) throw error;
+    return mapConfronto(data);
+}
+
+async function atualizarJogo(id, dados) {
+    const { data, error } = await db.from('games').update({ name: dados.name, genre: dados.genre }).eq('id', id).select().single();
+    if (error) throw error;
+    return data;
+}
+
+async function atualizarTime(id, dados) {
+    const { data, error } = await db.from('teams').update({ name: dados.name, color: dados.color }).eq('id', id).select().single();
+    if (error) throw error;
+    return data;
+}
+
+async function atualizarCompetidor(id, dados) {
+    const { data, error } = await db.from('competitors').update({
+        name: dados.name,
+        nickname: dados.nickname,
+        team_id: Number(dados.teamId)
+    }).eq('id', id).select().single();
+    if (error) throw error;
+    return mapCompetidor(data);
+}
+
+async function atualizarConfronto(id, dados) {
+    const payload = {};
+    if (dados.gameId !== undefined) payload.game_id = Number(dados.gameId);
+    if (dados.team1Id !== undefined) payload.team1_id = Number(dados.team1Id);
+    if (dados.team2Id !== undefined) payload.team2_id = Number(dados.team2Id);
+    if (dados.score1 !== undefined) payload.score1 = Number(dados.score1);
+    if (dados.score2 !== undefined) payload.score2 = Number(dados.score2);
+    if (dados.status !== undefined) payload.status = dados.status;
+    if (dados.date !== undefined) payload.date = dados.date;
+
+    const { data, error } = await db.from('matches').update(payload).eq('id', id).select().single();
+    if (error) throw error;
+    return mapConfronto(data);
+}
+
+async function apagarJogo(id) {
+    const { error } = await db.from('games').delete().eq('id', id);
+    if (error) throw error;
+    return { ok: true };
+}
+
+async function apagarTime(id) {
+    const { error } = await db.from('teams').delete().eq('id', id);
+    if (error) throw error;
+    return { ok: true };
+}
+
+async function apagarCompetidor(id) {
+    const { error } = await db.from('competitors').delete().eq('id', id);
+    if (error) throw error;
+    return { ok: true };
+}
+
+async function apagarConfronto(id) {
+    const { error } = await db.from('matches').delete().eq('id', id);
+    if (error) throw error;
+    return { ok: true };
+}
